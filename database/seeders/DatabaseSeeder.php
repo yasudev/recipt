@@ -5,10 +5,10 @@ namespace Database\Seeders;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\User;
-use Illuminate\Database\Seed;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
-class DatabaseSeeder extends Seed
+class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
