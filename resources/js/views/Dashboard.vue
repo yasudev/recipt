@@ -152,9 +152,8 @@ async function load() {
 
     // Offline: compute from local database
     const today = todayString();
-    const [prods, categories, allSales, pendingCount] = await Promise.all([
+    const [prods, allSales, pendingCount] = await Promise.all([
         db.products.toArray(),
-        db.categories.toArray(),
         db.sales.orderBy('created_at').reverse().toArray(),
         db.sales.where('sync_status').equals('pending').count(),
     ]);

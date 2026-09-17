@@ -9,18 +9,13 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['category_id', 'name', 'sku', 'price', 'stock', 'is_active'];
+    protected $fillable = ['name', 'sku', 'price', 'stock', 'is_active'];
 
     protected $casts = [
         'price' => 'decimal:2',
         'stock' => 'integer',
         'is_active' => 'boolean',
     ];
-
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
 
     public function saleItems()
     {

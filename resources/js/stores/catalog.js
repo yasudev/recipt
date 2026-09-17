@@ -6,7 +6,6 @@ import { isOnline } from '../services/sync';
 
 export const useCatalogStore = defineStore('catalog', () => {
     const products = ref([]);
-    const categories = ref([]);
     const loaded = ref(false);
 
     const activeProducts = computed(() =>
@@ -22,18 +21,9 @@ export const useCatalogStore = defineStore('catalog', () => {
         };
     }
 
-    function categoryName(id) {
-        const cat = categories.value.find((c) => c.id === id);
-        return cat ? cat.name : 'Uncategorized';
-    }
-
     async function loadLocal() {
-        const [prods, cats] = await Promise.all([
-            db.products.toArray(),
-            db.categories.toArray(),
-        ]);
+        const prods = await db.products.toArray();
         products.value = prods.map(normalizeProduct);
-        categories.value = cats;
         loaded.value = true;
     }
 
@@ -79,56 +69,14 @@ export const useCatalogStore = defineStore('catalog', () => {
         await loadLocal();
     }
 
-    async function createCategory(payload) {
-        assertOnline();
-        const res = await api.post('/categories', payload);
-        if (res.status !== 201) {
-            throw new Error(res.data?.message || 'Failed to create category');
-        }
-        const cat = { id: res.data.id, name: res.data.name, description: res.data.description ?? '' };
-        await db.categories.put(cat);
-        await loadLocal();
-        return res.data;
-    }
-
-    async function updateCategory(category) {
-        assertOnline();
-        const res = await api.put(`/categories/${category.id}`, category);
-        if (res.status !== 200) {
-            throw new Error(res.data?.message || 'Failed to update category');
-        }
-        await db.categories.put({
-            id: category.id,
-            name: category.name,
-            description: category.description ?? '',
-        });
-        await loadLocal();
-        return res.data;
-    }
-
-    async function deleteCategory(id) {
-        assertOnline();
-        const res = await api.delete(`/categories/${id}`);
-        if (res.status !== 200) {
-            throw new Error(res.data?.message || 'Failed to delete category');
-        }
-        await db.categories.delete(id);
-        await loadLocal();
-    }
-
     return {
         products,
-        categories,
         loaded,
         activeProducts,
-        categoryName,
         productById,
         loadLocal,
         createProduct,
         updateProduct,
         deleteProduct,
-        createCategory,
-        updateCategory,
-        deleteCategory,
     };
 });

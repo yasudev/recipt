@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SaleController;
@@ -16,7 +15,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
-    Route::apiResource('categories', CategoryController::class);
     Route::apiResource('products', ProductController::class);
     Route::put('/products/{product}/stock', [ProductController::class, 'updateStock']);
 

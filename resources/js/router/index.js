@@ -15,7 +15,6 @@ const routes = [
             { path: '', name: 'dashboard', component: () => import('../views/Dashboard.vue') },
             { path: 'pos', name: 'pos', component: () => import('../views/POS.vue') },
             { path: 'products', name: 'products', component: () => import('../views/Products.vue') },
-            { path: 'categories', name: 'categories', component: () => import('../views/Categories.vue') },
             { path: 'sales', name: 'sales', component: () => import('../views/SalesHistory.vue') },
             { path: 'settings', name: 'settings', component: () => import('../views/Settings.vue') },
         ],

@@ -107,7 +107,6 @@ const navLinks = [
     navItem('dashboard', 'Dashboard', 'home'),
     navItem('pos', 'POS', 'pos'),
     navItem('products', 'Products', 'box'),
-    navItem('categories', 'Categories', 'tag'),
     navItem('sales', 'Sales', 'history'),
     navItem('settings', 'Settings', 'settings'),
 ];

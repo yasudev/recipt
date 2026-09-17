@@ -2,14 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\User;
-use Illuminate\Database\Seeder;
+use Illuminate\Database\Seed;
 use Illuminate\Support\Facades\Hash;
 
-class DatabaseSeeder extends Seeder
+class DatabaseSeeder extends Seed
 {
     public function run(): void
     {
@@ -19,25 +18,15 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
         ]);
 
-        $categories = [
-            ['name' => 'Beverages', 'description' => 'Drinks and beverages'],
-            ['name' => 'Food', 'description' => 'Food items'],
-            ['name' => 'Snacks', 'description' => 'Snacks and treats'],
-        ];
-
-        foreach ($categories as $cat) {
-            Category::create($cat);
-        }
-
         $products = [
-            ['name' => 'Water Bottle', 'sku' => 'WB001', 'category_id' => 1, 'price' => 1.00, 'stock' => 100],
-            ['name' => 'Orange Juice', 'sku' => 'OJ001', 'category_id' => 1, 'price' => 3.50, 'stock' => 50],
-            ['name' => 'Coffee', 'sku' => 'CF001', 'category_id' => 1, 'price' => 5.00, 'stock' => 80],
-            ['name' => 'Sandwich', 'sku' => 'SW001', 'category_id' => 2, 'price' => 8.00, 'stock' => 30],
-            ['name' => 'Burger', 'sku' => 'BG001', 'category_id' => 2, 'price' => 12.00, 'stock' => 25],
-            ['name' => 'Pizza Slice', 'sku' => 'PZ001', 'category_id' => 2, 'price' => 6.00, 'stock' => 40],
-            ['name' => 'Chips', 'sku' => 'CH001', 'category_id' => 3, 'price' => 2.50, 'stock' => 60],
-            ['name' => 'Chocolate Bar', 'sku' => 'CB001', 'category_id' => 3, 'price' => 3.00, 'stock' => 45],
+            ['name' => 'Water Bottle', 'sku' => 'WB001', 'price' => 1.00, 'stock' => 100],
+            ['name' => 'Orange Juice', 'sku' => 'OJ001', 'price' => 3.50, 'stock' => 50],
+            ['name' => 'Coffee', 'sku' => 'CF001', 'price' => 5.00, 'stock' => 80],
+            ['name' => 'Sandwich', 'sku' => 'SW001', 'price' => 8.00, 'stock' => 30],
+            ['name' => 'Burger', 'sku' => 'BG001', 'price' => 12.00, 'stock' => 25],
+            ['name' => 'Pizza Slice', 'sku' => 'PZ001', 'price' => 6.00, 'stock' => 40],
+            ['name' => 'Chips', 'sku' => 'CH001', 'price' => 2.50, 'stock' => 60],
+            ['name' => 'Chocolate Bar', 'sku' => 'CB001', 'price' => 3.00, 'stock' => 45],
         ];
 
         foreach ($products as $product) {

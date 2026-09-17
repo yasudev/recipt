@@ -26,20 +26,17 @@ export function notifySyncComplete() {
 export async function pullCatalog() {
     if (!isOnline.value) return false;
 
-    const [productsRes, categoriesRes, settingsRes] = await Promise.all([
+    const [productsRes, settingsRes] = await Promise.all([
         api.get('/products?active_only=1'),
-        api.get('/categories'),
         api.get('/settings'),
     ]);
 
     if (
         productsRes.status === 200 &&
-        categoriesRes.status === 200 &&
         settingsRes.status === 200
     ) {
         const products = productsRes.data.map((p) => ({
             id: p.id,
-            category_id: p.category_id,
             name: p.name,
             sku: p.sku,
             price: Number(p.price) || 0,
@@ -47,17 +44,10 @@ export async function pullCatalog() {
             is_active: p.is_active === true || p.is_active === 1,
             updated_at: new Date().toISOString(),
         }));
-        const categories = categoriesRes.data.map((c) => ({
-            id: c.id,
-            name: c.name,
-            description: c.description ?? '',
-        }));
 
-        await db.transaction('rw', db.products, db.categories, db.settings, async () => {
+        await db.transaction('rw', db.products, db.settings, async () => {
             await db.products.clear();
             await db.products.bulkPut(products);
-            await db.categories.clear();
-            await db.categories.bulkPut(categories);
 
             await db.settings.clear();
             const settings = settingsRes.data;

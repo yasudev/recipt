@@ -11,7 +11,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_370px] gap-4 lg:items-start">
             <!-- Left: products -->
             <div :class="{ 'hidden': showCart, 'lg:block': true }" class="space-y-4">
-                <!-- Search + categories -->
+                <!-- Search -->
                 <div class="space-y-3">
                     <div class="relative">
                         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -23,24 +23,6 @@
                             placeholder="Search products..."
                             class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                         />
-                    </div>
-                    <div class="flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1">
-                        <button
-                            @click="activeCategory = null"
-                            class="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border"
-                            :class="activeCategory === null ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-600 border-slate-200'"
-                        >
-                            All
-                        </button>
-                        <button
-                            v-for="cat in catalog.categories"
-                            :key="cat.id"
-                            @click="activeCategory = cat.id"
-                            class="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border"
-                            :class="activeCategory === cat.id ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-600 border-slate-200'"
-                        >
-                            {{ cat.name }}
-                        </button>
                     </div>
                 </div>
 
@@ -275,7 +257,6 @@ const catalog = useCatalogStore();
 const settings = useSettingsStore();
 
 const search = ref('');
-const activeCategory = ref(null);
 const showCart = ref(false);
 const receiptOpen = ref(false);
 const saving = ref(false);
@@ -283,9 +264,6 @@ const error = ref('');
 
 const filteredProducts = computed(() => {
     let list = catalog.activeProducts;
-    if (activeCategory.value !== null) {
-        list = list.filter((p) => p.category_id === activeCategory.value);
-    }
     const q = search.value.trim().toLowerCase();
     if (q) {
         list = list.filter(

@@ -3,12 +3,6 @@
         <div class="flex items-center justify-between gap-3">
             <h1 class="text-xl lg:text-2xl font-bold text-slate-800">Products</h1>
             <div class="flex items-center gap-2">
-                <router-link
-                    :to="{ name: 'categories' }"
-                    class="text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-lg px-3 py-2 hover:bg-slate-50"
-                >
-                    Categories
-                </router-link>
                 <button
                     @click="openCreate"
                     :disabled="!isOnline"
@@ -35,15 +29,6 @@
                     class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                 />
             </div>
-            <select
-                v-model="categoryFilter"
-                class="px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-                <option :value="null">All categories</option>
-                <option v-for="cat in catalog.categories" :key="cat.id" :value="cat.id">
-                    {{ cat.name }}
-                </option>
-            </select>
         </div>
 
         <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
@@ -52,7 +37,6 @@
                     <thead class="bg-slate-50 text-xs text-slate-500">
                         <tr>
                             <th class="text-left font-medium px-4 py-3">Name / SKU</th>
-                            <th class="text-left font-medium px-4 py-3">Category</th>
                             <th class="text-right font-medium px-4 py-3">Price</th>
                             <th class="text-right font-medium px-4 py-3">Stock</th>
                             <th class="text-center font-medium px-4 py-3">Status</th>
@@ -61,7 +45,7 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         <tr v-if="!filtered.length">
-                            <td colspan="6" class="px-4 py-8 text-center text-slate-400">
+                            <td colspan="5" class="px-4 py-8 text-center text-slate-400">
                                 {{ catalog.loaded ? 'No products found' : 'Loading...' }}
                             </td>
                         </tr>
@@ -70,7 +54,6 @@
                                 <div class="font-medium text-slate-800">{{ product.name }}</div>
                                 <div class="text-xs text-slate-400">{{ product.sku }}</div>
                             </td>
-                            <td class="px-4 py-3 text-slate-500">{{ catalog.categoryName(product.category_id) }}</td>
                             <td class="px-4 py-3 text-right font-medium text-slate-800">{{ currency(product.price) }}</td>
                             <td class="px-4 py-3 text-right">
                                 <span
@@ -119,14 +102,6 @@
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">SKU</label>
                         <input v-model="form.sku" required class="w-full px-3 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Category</label>
-                        <select v-model="form.category_id" required class="w-full px-3 py-2.5 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                            <option v-for="cat in catalog.categories" :key="cat.id" :value="cat.id">
-                                {{ cat.name }}
-                            </option>
-                        </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Price (before VAT)</label>
@@ -186,7 +161,6 @@ const catalog = useCatalogStore();
 const settings = useSettingsStore();
 
 const search = ref('');
-const categoryFilter = ref(null);
 const modalOpen = ref(false);
 const deleteOpen = ref(false);
 const editing = ref(false);
@@ -198,7 +172,6 @@ const form = ref({
     id: null,
     name: '',
     sku: '',
-    category_id: null,
     price: 0,
     stock: 0,
     is_active: true,
@@ -206,9 +179,6 @@ const form = ref({
 
 const filtered = computed(() => {
     let list = catalog.products;
-    if (categoryFilter.value !== null) {
-        list = list.filter((p) => p.category_id === categoryFilter.value);
-    }
     const q = search.value.trim().toLowerCase();
     if (q) {
         list = list.filter(
@@ -227,7 +197,6 @@ function resetForm() {
         id: null,
         name: '',
         sku: '',
-        category_id: catalog.categories[0]?.id ?? null,
         price: 0,
         stock: 0,
         is_active: true,
@@ -248,7 +217,6 @@ function openEdit(product) {
         id: product.id,
         name: product.name,
         sku: product.sku,
-        category_id: product.category_id,
         price: Number(product.price),
         stock: product.stock,
         is_active: !!product.is_active,
@@ -296,9 +264,6 @@ async function doDelete() {
 onMounted(async () => {
     if (!catalog.loaded) {
         await catalog.loadLocal();
-    }
-    if (!form.value.category_id && catalog.categories.length) {
-        form.value.category_id = catalog.categories[0].id;
     }
 });
 </script>

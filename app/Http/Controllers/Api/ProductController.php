@@ -10,17 +10,13 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with('category');
+        $query = Product::query();
 
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', "%{$request->search}%")
                   ->orWhere('sku', 'like', "%{$request->search}%");
             });
-        }
-
-        if ($request->category_id) {
-            $query->where('category_id', $request->category_id);
         }
 
         if ($request->has('active_only')) {
@@ -35,22 +31,21 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'sku' => 'required|string|max:255|unique:products',
-            'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'is_active' => 'boolean',
         ]);
 
         $product = Product::create($request->only(
-            'name', 'sku', 'category_id', 'price', 'stock', 'is_active'
+            'name', 'sku', 'price', 'stock', 'is_active'
         ));
 
-        return response()->json($product->load('category'), 201);
+        return response()->json($product, 201);
     }
 
     public function show(Product $product)
     {
-        return response()->json($product->load('category'));
+        return response()->json($product);
     }
 
     public function update(Request $request, Product $product)
@@ -58,17 +53,16 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'sku' => 'required|string|max:255|unique:products,sku,' . $product->id,
-            'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'is_active' => 'boolean',
         ]);
 
         $product->update($request->only(
-            'name', 'sku', 'category_id', 'price', 'stock', 'is_active'
+            'name', 'sku', 'price', 'stock', 'is_active'
         ));
 
-        return response()->json($product->load('category'));
+        return response()->json($product);
     }
 
     public function destroy(Product $product)
