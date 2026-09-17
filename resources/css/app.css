@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html,
+body,
+#app {
+    height: 100%;
+}
+
+body {
+    font-family: var(--font-sans);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.modal-enter-active,
+.modal-leave-active {
+    transition: opacity 0.15s ease;
+}
+.modal-enter-from,
+.modal-leave-to {
+    opacity: 0;
+}
+.modal-enter-active .modal-box,
+.modal-leave-active .modal-box {
+    transition: transform 0.15s ease;
+}
+.modal-enter-from .modal-box,
+.modal-leave-to .modal-box {
+    transform: scale(0.96) translateY(8px);
+}
