@@ -8,31 +8,34 @@
   body * {
     visibility: hidden;
   }
-  #printable-receipt, #printable-receipt * {
+  #print-copies, #print-copies * {
     visibility: visible;
   }
-  #printable-receipt {
+  #print-copies {
     position: absolute;
     left: 0;
     top: 0;
     margin: 0 auto;
-    background: white !important;
-    color: black !important;
-    box-shadow: none !important;
   }
-  #printable-receipt.paper-80mm {
+  #print-copies .print-copy {
+    page-break-after: always;
+  }
+  #print-copies .print-copy:last-child {
+    page-break-after: auto;
+  }
+  #print-copies .print-copy.paper-80mm {
     width: 80mm !important;
     max-width: 80mm !important;
     padding: 10px !important;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
   }
-  #printable-receipt.paper-58mm {
+  #print-copies .print-copy.paper-58mm {
     width: 58mm !important;
     max-width: 58mm !important;
     padding: 6px !important;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
   }
-  #printable-receipt.paper-a4 {
+  #print-copies .print-copy.paper-a4 {
     width: 100% !important;
     max-width: 210mm !important;
     min-height: 297mm;

@@ -45,9 +45,40 @@ const notifySaved = () => {
 };
 
 const handleTestPrint = () => {
+  const copies = Math.max(1, Number(settings.value.printCopies) || 1);
+  const source = document.getElementById('printable-receipt');
+  if (!source) return;
+
+  let wrapper = document.getElementById('print-copies');
+  if (!wrapper) {
+    wrapper = document.createElement('div');
+    wrapper.id = 'print-copies';
+    document.body.appendChild(wrapper);
+  }
+  wrapper.innerHTML = '';
+
+  const pageSizes = { a4: 'A4', '58mm': '58mm auto', '80mm': '80mm auto' };
+  const pageSize = pageSizes[settings.value.paperWidth] || '80mm auto';
+
+  let styleEl = document.getElementById('print-page-css');
+  if (!styleEl) {
+    styleEl = document.createElement('style');
+    styleEl.id = 'print-page-css';
+    document.head.appendChild(styleEl);
+  }
+  styleEl.textContent = `@page { size: ${pageSize}; margin: 0; }`;
+
+  for (let i = 0; i < copies; i++) {
+    const clone = source.cloneNode(true) as HTMLElement;
+    clone.removeAttribute('id');
+    clone.classList.add('print-copy');
+    wrapper.appendChild(clone);
+  }
+
   isPrinting.value = true;
   setTimeout(() => {
     window.print();
+    wrapper.innerHTML = '';
     isPrinting.value = false;
   }, 100);
 };
@@ -899,7 +930,7 @@ const resetPrintDefaults = () => {
               <!-- Receipt Header -->
               <div class="text-center pb-3 border-b border-dashed border-slate-400">
                 <h4 class="font-bold text-sm tracking-tight text-slate-950 uppercase">
-                  {{ settings.storeName || 'AURA POS' }}
+                  {{ settings.storeName || 'Yum POS' }}
                 </h4>
                 <p v-if="settings.tagline" class="text-[10px] text-slate-600 mt-0.5">
                   {{ settings.tagline }}
@@ -926,7 +957,7 @@ const resetPrintDefaults = () => {
                 </div>
                 <div v-if="settings.showCashier !== false" class="flex justify-between">
                   <span class="text-slate-500">CASHIER:</span>
-                  <span>Alex R.</span>
+                  <span>Cashier</span>
                 </div>
                 <div v-if="settings.showCustomer !== false" class="flex justify-between">
                   <span class="text-slate-500">CUSTOMER:</span>
@@ -1022,18 +1053,12 @@ const resetPrintDefaults = () => {
             </div>
           </div>
 
-          <!-- Bottom Action -->
-          <div class="w-full mt-4 flex items-center justify-between gap-2">
+          <!-- Bottom Info -->
+          <div class="w-full mt-4 flex items-center justify-center gap-2">
+            <Printer class="w-3.5 h-3.5 text-indigo-400" />
             <span class="text-[11px] text-slate-400">
               Ready for {{ settings.paperWidth === 'a4' ? 'A4 laser/inkjet sheet' : (settings.paperWidth || '80mm') + ' thermal' }} output
             </span>
-            <button
-              @click="handleTestPrint"
-              class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition active:scale-95"
-            >
-              <Printer class="w-3.5 h-3.5 text-indigo-400" />
-              <span>Print Sample</span>
-            </button>
           </div>
         </div>
       </div>
