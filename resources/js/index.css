@@ -5,20 +5,24 @@
 }
 
 @media print {
-  body * {
-    visibility: hidden;
+  body {
+    background: white !important;
   }
-  #print-copies, #print-copies * {
-    visibility: visible;
+  #app,
+  body > *:not(#print-copies) {
+    display: none !important;
   }
   #print-copies {
-    position: absolute;
-    left: 0;
-    top: 0;
+    display: block !important;
+    width: 100%;
     margin: 0 auto;
   }
   #print-copies .print-copy {
     page-break-after: always;
+    page-break-inside: avoid;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
   }
   #print-copies .print-copy:last-child {
     page-break-after: auto;
@@ -26,17 +30,19 @@
   #print-copies .print-copy.paper-80mm {
     width: 80mm !important;
     max-width: 80mm !important;
+    margin: 0 auto !important;
     padding: 10px !important;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
   }
   #print-copies .print-copy.paper-58mm {
     width: 58mm !important;
     max-width: 58mm !important;
+    margin: 0 auto !important;
     padding: 6px !important;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
   }
   #print-copies .print-copy.paper-a4 {
-    width: 100% !important;
+    width: 210mm !important;
     max-width: 210mm !important;
     min-height: 297mm;
     padding: 16mm 20mm !important;

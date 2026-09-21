@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { usePosStore } from '../composables/usePosStore';
+import { printPage } from '../utils/print';
 import {
   Printer,
   Check,
@@ -45,40 +46,13 @@ const notifySaved = () => {
 };
 
 const handleTestPrint = () => {
-  const copies = Math.max(1, Number(settings.value.printCopies) || 1);
-  const source = document.getElementById('printable-receipt');
-  if (!source) return;
-
-  let wrapper = document.getElementById('print-copies');
-  if (!wrapper) {
-    wrapper = document.createElement('div');
-    wrapper.id = 'print-copies';
-    document.body.appendChild(wrapper);
-  }
-  wrapper.innerHTML = '';
-
-  const pageSizes = { a4: 'A4', '58mm': '58mm auto', '80mm': '80mm auto' };
-  const pageSize = pageSizes[settings.value.paperWidth] || '80mm auto';
-
-  let styleEl = document.getElementById('print-page-css');
-  if (!styleEl) {
-    styleEl = document.createElement('style');
-    styleEl.id = 'print-page-css';
-    document.head.appendChild(styleEl);
-  }
-  styleEl.textContent = `@page { size: ${pageSize}; margin: 0; }`;
-
-  for (let i = 0; i < copies; i++) {
-    const clone = source.cloneNode(true) as HTMLElement;
-    clone.removeAttribute('id');
-    clone.classList.add('print-copy');
-    wrapper.appendChild(clone);
-  }
-
   isPrinting.value = true;
   setTimeout(() => {
-    window.print();
-    wrapper.innerHTML = '';
+    printPage(
+      'printable-receipt',
+      settings.value.paperWidth || '80mm',
+      settings.value.printCopies || 1,
+    );
     isPrinting.value = false;
   }, 100);
 };

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { usePosStore } from '../composables/usePosStore';
+import { printPage } from '../utils/print';
 import { X, Printer, CheckCircle, Receipt, ArrowRight, FileText } from 'lucide-vue-next';
 
 const {
@@ -14,7 +15,11 @@ const closeModal = () => {
 };
 
 const handlePrint = () => {
-  window.print();
+  printPage(
+    'printable-receipt',
+    settings.value.paperWidth || '80mm',
+    settings.value.printCopies || 1,
+  );
 };
 
 const handleNewSale = () => {

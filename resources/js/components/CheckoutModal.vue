@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import { usePosStore } from '../composables/usePosStore';
+import { printPage } from '../utils/print';
 import { PaymentMethod } from '../types';
 import {
   X,
@@ -86,6 +87,16 @@ const handleComplete = () => {
   });
 
   closeModal();
+
+  if (settings.value.autoPrintReceipt) {
+    nextTick(() => {
+      printPage(
+        'printable-receipt',
+        settings.value.paperWidth || '80mm',
+        settings.value.printCopies || 1,
+      );
+    });
+  }
 };
 </script>
 
