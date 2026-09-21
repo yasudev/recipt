@@ -15,13 +15,14 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "allowJs": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "paths": {
       "@/*": [
-        "resources/js/*"
+        "./resources/js/*"
       ]
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "include": ["resources/js/**/*.ts", "resources/js/**/*.d.ts"]
 }
