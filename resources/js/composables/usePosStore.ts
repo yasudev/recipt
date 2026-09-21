@@ -357,7 +357,7 @@ export function usePosStore() {
       amountTendered: payload.paymentMethod === 'cash' ? tendered : undefined,
       changeDue: payload.paymentMethod === 'cash' ? changeDue : undefined,
       customerName: payload.customerName?.trim() || 'Walk-in Customer',
-      cashierName: payload.cashierName || 'Alex (Terminal 1)',
+      cashierName: payload.cashierName || 'Cashier',
       status: 'completed',
       notes: payload.notes,
     };

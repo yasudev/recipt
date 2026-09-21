@@ -5,7 +5,6 @@ import {
   Menu,
   ShoppingCart,
   Plus,
-  HardDrive,
 } from 'lucide-vue-next';
 
 const {
@@ -68,18 +67,8 @@ const handleOpenAddProduct = () => {
       </div>
     </div>
 
-    <!-- Right: Quick Actions (Local Mode, Add Product, Cart) -->
+    <!-- Right: Quick Actions (Add Product, Cart) -->
     <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-      <!-- Local Mode Badge -->
-      <div
-        class="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono border bg-emerald-950/40 text-emerald-400 border-emerald-800/50"
-        title="Data is stored locally on this device"
-      >
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <HardDrive class="w-3.5 h-3.5 text-emerald-400" />
-        <span class="font-sans font-medium text-[11px]">Local</span>
-      </div>
-
       <!-- Add Product Quick Button -->
       <button
         @click="handleOpenAddProduct"

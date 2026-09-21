@@ -81,7 +81,7 @@ const handleComplete = () => {
     amountTendered: paymentMethod.value === 'cash' ? parseFloat(amountTendered.value) : undefined,
     discount: Number(discount.value) || 0,
     customerName: customerName.value.trim() || 'Walk-in Customer',
-    cashierName: 'Alex (Terminal 1)',
+    cashierName: 'Cashier',
     notes: notes.value.trim(),
   });
 

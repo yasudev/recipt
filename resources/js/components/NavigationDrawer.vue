@@ -128,20 +128,6 @@ const navItems = computed<NavItem[]>(() => [
         </button>
       </div>
 
-      <!-- Quick Action / Status Pill (when expanded) -->
-      <div
-        v-if="!isDrawerCollapsed"
-        class="px-3.5 py-2.5 mx-3 my-2 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between text-xs"
-      >
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span class="text-slate-300 font-medium">Terminal #1</span>
-        </div>
-        <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 font-semibold text-[10px] border border-emerald-500/20 font-mono">
-          Local Mode
-        </span>
-      </div>
-
       <!-- Navigation Links -->
       <nav class="flex-1 px-3 py-3 space-y-1.5 overflow-y-auto">
         <button

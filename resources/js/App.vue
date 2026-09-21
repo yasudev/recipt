@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
 import { usePosStore } from './composables/usePosStore';
 import NavigationDrawer from './components/NavigationDrawer.vue';
 import HeaderBar from './components/HeaderBar.vue';
@@ -11,30 +10,8 @@ import AddProductModal from './components/AddProductModal.vue';
 import CustomPriceModal from './components/CustomPriceModal.vue';
 import CheckoutModal from './components/CheckoutModal.vue';
 import ReceiptModal from './components/ReceiptModal.vue';
-import { WifiOff, Wifi } from 'lucide-vue-next';
 
 const { activeTab } = usePosStore();
-
-const isOnline = ref(navigator.onLine);
-const showOfflineToast = ref(false);
-
-const updateOnlineStatus = () => {
-  isOnline.value = navigator.onLine;
-  showOfflineToast.value = true;
-  setTimeout(() => {
-    showOfflineToast.value = false;
-  }, 4000);
-};
-
-onMounted(() => {
-  window.addEventListener('online', updateOnlineStatus);
-  window.addEventListener('offline', updateOnlineStatus);
-});
-
-onUnmounted(() => {
-  window.removeEventListener('online', updateOnlineStatus);
-  window.removeEventListener('offline', updateOnlineStatus);
-});
 </script>
 
 <template>
@@ -61,24 +38,5 @@ onUnmounted(() => {
     <CustomPriceModal />
     <CheckoutModal />
     <ReceiptModal />
-
-    <!-- Network Status Toast Banner -->
-    <div
-      v-if="showOfflineToast"
-      class="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-3 duration-200"
-    >
-      <div
-        :class="[
-          'px-4 py-2.5 rounded-2xl shadow-2xl border text-xs font-semibold flex items-center gap-2',
-          isOnline
-            ? 'bg-emerald-950 border-emerald-500/40 text-emerald-300'
-            : 'bg-rose-950 border-rose-500/40 text-rose-300',
-        ]"
-      >
-        <Wifi v-if="isOnline" class="w-4 h-4" />
-        <WifiOff v-else class="w-4 h-4" />
-        <span>{{ isOnline ? 'Network online — local changes synchronized' : 'Offline mode — transactions saved to local cache' }}</span>
-      </div>
-    </div>
   </div>
 </template>

@@ -17,7 +17,6 @@ import {
   Scissors,
   Copy,
   Banknote,
-  HardDrive,
 } from 'lucide-vue-next';
 
 const { settings, formatCurrency } = usePosStore();
@@ -111,26 +110,6 @@ const resetPrintDefaults = () => {
           <Printer class="w-4 h-4" />
           <span>Test Print</span>
         </button>
-      </div>
-    </div>
-
-    <!-- Local Storage Status Banner -->
-    <div class="p-3.5 sm:p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center shrink-0">
-          <HardDrive class="w-4 h-4" />
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-bold text-slate-200">Local Storage Mode</span>
-            <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-semibold">
-              Offline
-            </span>
-          </div>
-          <p class="text-[11px] text-slate-400 mt-0.5">
-            Your print preferences, receipt layout, paper size (A4/80mm/58mm), catalog products, and sales transactions are stored locally on this device.
-          </p>
-        </div>
       </div>
     </div>
 
@@ -767,7 +746,7 @@ const resetPrintDefaults = () => {
               <div class="flex items-start justify-between pb-3.5 border-b-2 border-slate-900">
                 <div>
                   <h4 class="font-extrabold text-base tracking-tight text-slate-950 uppercase">
-                    {{ settings.storeName || 'AURA ARTISAN POS' }}
+                    {{ settings.storeName || 'Yum POS' }}
                   </h4>
                   <p v-if="settings.tagline" class="text-[11px] text-slate-500 font-medium mt-0.5">
                     {{ settings.tagline }}
@@ -811,7 +790,7 @@ const resetPrintDefaults = () => {
                 <div>
                   <span class="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">Cashier / Staff</span>
                   <span class="font-semibold text-slate-900">
-                    {{ settings.showCashier !== false ? 'Alex R.' : 'Store Attendant' }}
+                    {{ settings.showCashier !== false ? 'Cashier' : 'Staff' }}
                   </span>
                 </div>
               </div>
