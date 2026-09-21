@@ -5,9 +5,7 @@ import {
   Menu,
   ShoppingCart,
   Plus,
-  Cloud,
-  CloudOff,
-  RefreshCw,
+  HardDrive,
 } from 'lucide-vue-next';
 
 const {
@@ -18,8 +16,6 @@ const {
   isAddProductModalOpen,
   editingProduct,
   settings,
-  isApiConnected,
-  isSyncing,
 } = usePosStore();
 
 const pageTitle = computed(() => {
@@ -72,30 +68,16 @@ const handleOpenAddProduct = () => {
       </div>
     </div>
 
-    <!-- Right: Quick Actions (MySQL Sync Status, Add Product, Cart) -->
+    <!-- Right: Quick Actions (Local Mode, Add Product, Cart) -->
     <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-      <!-- MySQL Sync Status Badge -->
+      <!-- Local Mode Badge -->
       <div
-        :class="[
-          'hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono border transition-all',
-          isApiConnected
-            ? 'bg-emerald-950/40 text-emerald-400 border-emerald-800/50'
-            : 'bg-slate-800 text-slate-400 border-slate-700'
-        ]"
-        :title="isApiConnected ? 'Connected to MySQL database' : 'Connecting to database...'"
+        class="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono border bg-emerald-950/40 text-emerald-400 border-emerald-800/50"
+        title="Data is stored locally on this device"
       >
-        <span
-          :class="[
-            'w-2 h-2 rounded-full',
-            isApiConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
-          ]"
-        ></span>
-        <Cloud v-if="isApiConnected" class="w-3.5 h-3.5 text-emerald-400" />
-        <CloudOff v-else class="w-3.5 h-3.5 text-slate-400" />
-        <span class="font-sans font-medium text-[11px]">
-          {{ isSyncing ? 'Syncing...' : isApiConnected ? 'MySQL Server' : 'Connecting' }}
-        </span>
-        <RefreshCw v-if="isSyncing" class="w-2.5 h-2.5 animate-spin text-emerald-300 ml-0.5" />
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <HardDrive class="w-3.5 h-3.5 text-emerald-400" />
+        <span class="font-sans font-medium text-[11px]">Local</span>
       </div>
 
       <!-- Add Product Quick Button -->

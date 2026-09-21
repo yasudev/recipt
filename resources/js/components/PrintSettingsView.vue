@@ -17,11 +17,10 @@ import {
   Scissors,
   Copy,
   Banknote,
-  Cloud,
-  RefreshCw,
+  HardDrive,
 } from 'lucide-vue-next';
 
-const { settings, formatCurrency, isApiConnected, isSyncing, syncSettings, lastSyncTime } = usePosStore();
+const { settings, formatCurrency } = usePosStore();
 
 const saveStatus = ref('');
 const isPrinting = ref(false);
@@ -115,35 +114,23 @@ const resetPrintDefaults = () => {
       </div>
     </div>
 
-    <!-- MySQL Database Sync Status Banner -->
+    <!-- Local Storage Status Banner -->
     <div class="p-3.5 sm:p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
       <div class="flex items-center gap-3">
         <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center shrink-0">
-          <Cloud class="w-4 h-4" />
+          <HardDrive class="w-4 h-4" />
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="font-bold text-slate-200">MySQL Database Sync Active</span>
+            <span class="font-bold text-slate-200">Local Storage Mode</span>
             <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-semibold">
-              Live
+              Offline
             </span>
           </div>
           <p class="text-[11px] text-slate-400 mt-0.5">
-            Your print preferences, receipt layout, paper size (A4/80mm/58mm), catalog products, and sales transactions are persisted directly in MySQL.
+            Your print preferences, receipt layout, paper size (A4/80mm/58mm), catalog products, and sales transactions are stored locally on this device.
           </p>
         </div>
-      </div>
-      <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
-        <button
-          type="button"
-          @click="syncSettings(); notifySaved()"
-          :disabled="isSyncing"
-          class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 disabled:opacity-50"
-          title="Force save and push latest settings to MySQL database"
-        >
-          <RefreshCw :class="['w-3.5 h-3.5', isSyncing ? 'animate-spin text-indigo-400' : '']" />
-          <span>{{ isSyncing ? 'Syncing...' : 'Push to Cloud' }}</span>
-        </button>
       </div>
     </div>
 

@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#0f172a">
-    <meta name="description" content="Modern responsive Point of Sale, inventory management with MySQL database sync for products, sales transactions, and print settings.">
+    <meta name="description" content="Modern responsive Point of Sale and inventory management with offline local storage for products, sales transactions, and print settings.">
     <title>Yum POS</title>
     <meta property="og:title" content="Yum POS" />
-    <meta property="og:description" content="Modern responsive Point of Sale, inventory management with MySQL database sync for products, sales transactions, and print settings." />
+    <meta property="og:description" content="Modern responsive Point of Sale and inventory management with offline local storage for products, sales transactions, and print settings." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="manifest" href="/manifest.webmanifest">

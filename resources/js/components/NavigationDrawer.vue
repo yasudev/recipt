@@ -138,7 +138,7 @@ const navItems = computed<NavItem[]>(() => [
           <span class="text-slate-300 font-medium">Terminal #1</span>
         </div>
         <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 font-semibold text-[10px] border border-emerald-500/20 font-mono">
-          MySQL Live
+          Local Mode
         </span>
       </div>
 

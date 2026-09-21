@@ -27,7 +27,7 @@ export default defineConfig({
                 id: '/',
                 name: 'Yum POS',
                 short_name: 'Yum POS',
-                description: 'Modern responsive Point of Sale, inventory management with MySQL database sync for products, sales transactions, and print settings.',
+                description: 'Modern responsive Point of Sale and inventory management with offline local storage for products, sales transactions, and print settings.',
                 theme_color: '#0f172a',
                 background_color: '#0f172a',
                 display: 'standalone',

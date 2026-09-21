@@ -1,7 +1,6 @@
 import { ref, computed, watch } from 'vue';
 import { Product, CartItem, SaleRecord, StoreSettings, NavigationTab } from '../types';
 import { INITIAL_PRODUCTS, INITIAL_SALES, INITIAL_SETTINGS } from '../data/initialData';
-import api from '../services/api';
 
 // Persistent fallback storage keys
 const STORAGE_KEY_PRODUCTS = 'yum_pos_products_v1';
@@ -83,12 +82,6 @@ const activeTab = ref<NavigationTab>('pos');
 const isDrawerOpen = ref<boolean>(false);
 const isDrawerCollapsed = ref<boolean>(false);
 
-// API Sync Indicators
-const isApiConnected = ref<boolean>(false);
-const isSyncing = ref<boolean>(false);
-const syncError = ref<string | null>(null);
-const lastSyncTime = ref<Date | null>(null);
-
 // Modal & Prompt states
 const isAddProductModalOpen = ref<boolean>(false);
 const editingProduct = ref<Product | null>(null);
@@ -97,128 +90,14 @@ const isCustomPriceModalOpen = ref<boolean>(false);
 const pendingProductForCustomPrice = ref<Product | null>(null);
 const selectedSaleForReceipt = ref<SaleRecord | null>(null);
 
-// Prevent circular sync loops
-let isApplyingRemoteUpdate = false;
-let isInitializedApi = false;
-
-// API helpers
-async function fetchProducts() {
-  try {
-    const response = await api.get('/products');
-    const serverProducts = Array.isArray(response.data) ? response.data : response.data.data || [];
-    products.value = serverProducts.map((p: any) => ({
-      id: String(p.id),
-      name: p.name,
-      price: Number(p.price) || 0,
-      category: p.category || 'general',
-      sku: p.sku || `SKU-${p.id}`,
-      stock: Number(p.stock) || 0,
-      barcode: p.barcode || '',
-      description: p.description || '',
-      color: p.color || '#6366f1',
-      isPriceOptional: false,
-      createdAt: p.created_at ? Date.parse(p.created_at) : Date.now(),
-      updatedAt: p.updated_at ? Date.parse(p.updated_at) : Date.now(),
-    }));
-    localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products.value));
-    isApiConnected.value = true;
-    syncError.value = null;
-    lastSyncTime.value = new Date();
-  } catch (err: any) {
-    console.warn('Failed to fetch products from API:', err);
-    syncError.value = err.message || 'Failed to sync products';
-  }
-}
-
-async function fetchSales() {
-  try {
-    const response = await api.get('/sales');
-    const serverSales = Array.isArray(response.data) ? response.data : response.data.data || [];
-    sales.value = serverSales.map((s: any) => ({
-      id: s.receipt_number || s.local_id || `ORD-${s.id}`,
-      timestamp: s.sale_date ? Date.parse(`${s.sale_date}T${s.sale_time || '00:00'}`) : Date.parse(s.created_at),
-      items: (s.items || []).map((item: any) => ({
-        id: `cart-${item.product_id}-${Date.now()}`,
-        productId: String(item.product_id),
-        name: item.product_name,
-        unitPrice: Number(item.price) || 0,
-        isCustomPrice: false,
-        quantity: Number(item.quantity) || 1,
-        sku: item.sku || `SKU-${item.product_id}`,
-        category: 'general',
-      })),
-      subtotal: Number(s.subtotal) || 0,
-      taxRate: Number(s.vat_rate) || 0,
-      taxAmount: Number(s.vat_amount) || 0,
-      discount: Number(s.discount) || 0,
-      total: Number(s.total) || 0,
-      paymentMethod: s.payment_method || 'cash',
-      amountTendered: s.amount_tendered ? Number(s.amount_tendered) : undefined,
-      changeDue: s.change_due ? Number(s.change_due) : undefined,
-      customerName: s.customer_name || 'Walk-in Customer',
-      cashierName: s.cashier_name || 'Store Attendant',
-      status: s.status || 'completed',
-      notes: s.notes || '',
-    }));
-    localStorage.setItem(STORAGE_KEY_SALES, JSON.stringify(sales.value));
-    isApiConnected.value = true;
-    syncError.value = null;
-    lastSyncTime.value = new Date();
-  } catch (err: any) {
-    console.warn('Failed to fetch sales from API:', err);
-    syncError.value = err.message || 'Failed to sync sales';
-  }
-}
-
-async function fetchSettings() {
-  try {
-    const response = await api.get('/settings');
-    const serverSettings = response.data || {};
-    settings.value = {
-      ...settings.value,
-      storeName: serverSettings.company_name || 'Yum POS',
-      storeAddress: serverSettings.company_address || 'Bole Sub-City, Addis Ababa, Ethiopia',
-      storePhone: serverSettings.company_phone || '+251 91 123 4567',
-      receiptFooter: serverSettings.receipt_footer || 'Thank you for choosing Yum POS! Visit us again soon.',
-      taxRate: Number(serverSettings.vat_rate) || 15,
-      currency: serverSettings.currency || 'ETB',
-    };
-    localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings.value));
-    isApiConnected.value = true;
-    syncError.value = null;
-    lastSyncTime.value = new Date();
-  } catch (err: any) {
-    console.warn('Failed to fetch settings from API:', err);
-    syncError.value = err.message || 'Failed to sync settings';
-  }
-}
-
-async function syncAll() {
-  isSyncing.value = true;
-  await Promise.all([fetchProducts(), fetchSales(), fetchSettings()]);
-  isSyncing.value = false;
-}
-
-// Start listeners immediately
-if (!isInitializedApi) {
-  isInitializedApi = true;
-  syncAll();
-}
-
-// Auto-sync Settings changes to API
+// Settings sync to LocalStorage
 watch(
   settings,
   (newVal) => {
-    localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(newVal));
-    if (!isApplyingRemoteUpdate) {
-      api.put('/settings', {
-        company_name: newVal.storeName,
-        company_address: newVal.storeAddress,
-        company_phone: newVal.storePhone,
-        vat_rate: newVal.taxRate,
-        receipt_footer: newVal.receiptFooter,
-        currency: newVal.currency,
-      }).catch((err) => console.warn('Failed to save settings to API:', err));
+    try {
+      localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(newVal));
+    } catch (e) {
+      console.error('Failed to persist settings locally', e);
     }
   },
   { deep: true }
@@ -391,8 +270,8 @@ export function usePosStore() {
     }
   };
 
-  // Product Actions (API Synced)
-  const addProduct = async (payload: {
+  // Product Actions
+  const addProduct = (payload: {
     name: string;
     price?: number | null;
     isPriceOptional?: boolean;
@@ -424,89 +303,36 @@ export function usePosStore() {
       updatedAt: Date.now(),
     };
 
-    // Optimistic local update
+    // Add to local store
     products.value = [newProd, ...products.value.filter((p) => p.id !== newProdId)];
-
-    // Sync to API
-    try {
-      const response = await api.post('/products', {
-        name: newProd.name,
-        sku: newProd.sku,
-        price: newProd.price,
-        stock: newProd.stock,
-        is_active: true,
-      });
-      const serverProduct = response.data;
-      const updatedProduct = {
-        ...newProd,
-        id: String(serverProduct.id),
-        createdAt: serverProduct.created_at ? Date.parse(serverProduct.created_at) : Date.now(),
-        updatedAt: serverProduct.updated_at ? Date.parse(serverProduct.updated_at) : Date.now(),
-      };
-      products.value = products.value.map((p) => (p.id === newProdId ? updatedProduct : p));
-      lastSyncTime.value = new Date();
-    } catch (err) {
-      console.error('Failed to add product to API:', err);
-      products.value = products.value.filter((p) => p.id !== newProdId);
-    }
 
     return newProd;
   };
 
-  const updateProduct = async (id: string, updates: Partial<Product>) => {
+  const updateProduct = (id: string, updates: Partial<Product>) => {
     const index = products.value.findIndex((p) => p.id === id);
     if (index > -1) {
-      const updatedItem = {
+      products.value[index] = {
         ...products.value[index],
         ...updates,
         updatedAt: Date.now(),
       };
-      products.value[index] = updatedItem;
-
-      // Sync to API
-      try {
-        const response = await api.put(`/products/${id}`, {
-          name: updatedItem.name,
-          sku: updatedItem.sku,
-          price: updatedItem.price,
-          stock: updatedItem.stock,
-          is_active: true,
-        });
-        const serverProduct = response.data;
-        products.value[index] = {
-          ...updatedItem,
-          id: String(serverProduct.id),
-          updatedAt: serverProduct.updated_at ? Date.parse(serverProduct.updated_at) : Date.now(),
-        };
-        lastSyncTime.value = new Date();
-      } catch (err) {
-        console.error('Failed to update product in API:', err);
-      }
     }
   };
 
-  const deleteProduct = async (id: string) => {
-    // Optimistic local removal
+  const deleteProduct = (id: string) => {
     products.value = products.value.filter((p) => p.id !== id);
-
-    // Sync deletion to API
-    try {
-      await api.delete(`/products/${id}`);
-      lastSyncTime.value = new Date();
-    } catch (err) {
-      console.error('Failed to delete product from API:', err);
-    }
   };
 
-  // Sale Completion (API Synced)
-  const completeSale = async (payload: {
+  // Sale Completion
+  const completeSale = (payload: {
     paymentMethod: 'cash' | 'card' | 'qr' | 'split';
     amountTendered?: number;
     discount?: number;
     customerName?: string;
     cashierName?: string;
     notes?: string;
-  }): Promise<SaleRecord> => {
+  }): SaleRecord => {
     const subtotal = cartSubtotal.value;
     const discount = payload.discount || 0;
     const discountedSubtotal = Math.max(0, subtotal - discount);
@@ -536,61 +362,21 @@ export function usePosStore() {
       notes: payload.notes,
     };
 
-    // Deduct stock locally and prepare product updates
-    const updatedProductsList: Product[] = [];
+    // Deduct stock locally
     cart.value.forEach((cItem) => {
       const p = products.value.find((prod) => prod.id === cItem.productId);
       if (p && p.stock !== undefined) {
         p.stock = Math.max(0, p.stock - cItem.quantity);
         p.updatedAt = Date.now();
-        updatedProductsList.push({ ...p });
       }
     });
 
-    // Save cart items for API sync before clearing
-    const cartItemsForSync = [...cart.value];
-
-    // Optimistic local state update
+    // Local state update
     sales.value = [saleRecord, ...sales.value];
     cart.value = [];
     selectedSaleForReceipt.value = saleRecord;
 
-    // Push new sale and stock deductions to API
-    try {
-      const response = await api.post('/sales', {
-        items: cartItemsForSync.map((item) => ({
-          product_id: item.productId,
-          quantity: item.quantity,
-        })),
-        payment_method: payload.paymentMethod,
-        local_id: saleId,
-        sale_date: new Date().toISOString().slice(0, 10),
-        sale_time: new Date().toTimeString().slice(0, 8),
-      });
-      const serverSale = response.data;
-      sales.value = sales.value.map((s) => (s.id === saleId ? {
-        ...s,
-        id: serverSale.receipt_number || saleId,
-      } : s));
-      lastSyncTime.value = new Date();
-    } catch (err) {
-      console.error('Failed to sync sale transaction to API:', err);
-    }
-
     return saleRecord;
-  };
-
-  // Manual Trigger to save settings to API
-  const syncSettings = async () => {
-    await api.put('/settings', {
-      company_name: settings.value.storeName,
-      company_address: settings.value.storeAddress,
-      company_phone: settings.value.storePhone,
-      vat_rate: settings.value.taxRate,
-      receipt_footer: settings.value.receiptFooter,
-      currency: settings.value.currency,
-    });
-    lastSyncTime.value = new Date();
   };
 
   // Backup & Restore
@@ -672,14 +458,6 @@ export function usePosStore() {
     isCustomPriceModalOpen,
     pendingProductForCustomPrice,
     selectedSaleForReceipt,
-
-    // API Sync State
-    isApiConnected,
-    isSyncing,
-    syncError,
-    lastSyncTime,
-    syncSettings,
-    syncAll,
 
     // Navigation & Drawer
     openDrawer,
