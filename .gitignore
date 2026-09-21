@@ -19,6 +19,7 @@
 /storage/*.key
 /storage/pail
 /vendor
+/yum-pos
 Homestead.json
 Homestead.yaml
 Thumbs.db
